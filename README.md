@@ -1,3 +1,4 @@
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.tartalostech/spring-boot-starter-biliopen.svg)](https://search.maven.org/artifact/io.github.tartalostech/spring-boot-starter-biliopen)
 ## 说明
 本项目为哔哩哔哩开放平台文档中各项接口的`Spring Boot`版签名实现案例，用于验证签名以及基础请求示例。  
 开放平台相关文档请访问：[接口签名实现标准](https://open.bilibili.com/doc/4/8673959e-f7bb-56e6-6e68-d225f971b81b)
