@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.tartalostech</groupId>
+    <artifactId>spring-boot-starter-biliopen</artifactId>
+    <version>0.0.1</version>
+    <name>spring-boot-starter-biliopen</name>
+    <description>本项目为哔哩哔哩开放平台文档中各项接口的Spring
+        Boot版签名实现，本签名示例的覆盖范围为哔哩哔哩开放平台文档中心中相关接口的签名实现，不包含直播创作者服务中心中的相关接口，请注意。
+    </description>
+    <url>https://github.com/tartalostech/spring-boot-starter-biliopen</url>
+
+    <scm>
+        <connection>scm:git:git://github.com/tartalostech/spring-boot-starter-biliopen.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/tartalostech/spring-boot-starter-biliopen.git
+        </developerConnection>
+        <url>https://github.com/tartalostech/spring-boot-starter-biliopen</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Tartalos, Inc.</name>
+        <url>https://github.com/tartalostech</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>wosiwq</name>
+            <email>wosiwq1@gmail.com</email>
+            <organization>Tartalos, Inc.</organization>
+            <organizationUrl>https://github.com/tartalostech</organizationUrl>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/tartalostech/spring-boot-starter-biliopen/issues</url>
+    </issueManagement>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
