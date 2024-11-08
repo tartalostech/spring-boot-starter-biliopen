@@ -20,7 +20,27 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * ArchiveUtil 实现了B站开放平台的请求签名，通过sendRequestWithSignature方法即可直接发送签名后的请求。
+ * <p>
+ * The {@code ArchiveUtil} class implements request signing for Bilibili Open Platform.
+ * It provides a fluent API to build and send signed HTTP requests using the {@code sendRequestWithSignature} method.
+ * </p>
+ *
+ * <p>
+ * Example usage:
+ * </p>
+ *
+ * <pre>{@code
+ * ArchiveUtil archiveUtil = new ArchiveUtil("your_client_id", "your_client_secret");
+ * JsonNode response = archiveUtil.sendRequestWithSignature()
+ *     .method(HttpMethod.POST)
+ *     .uri(new URI("https://api.bilibili.com/endpoint"))
+ *     .accessToken("your_access_token")
+ *     .body(requestBody)
+ *     .contentType(MediaType.APPLICATION_JSON)
+ *     .execute();
+ * }</pre>
+ *
+ * @author wosiwq
  */
 @Slf4j
 public class ArchiveUtil {
@@ -30,10 +50,10 @@ public class ArchiveUtil {
     private final RestClient restClient = RestClient.create();
 
     /**
-     * 构造函数，初始化客户端 ID 和客户端密钥。
+     * Constructs an {@code ArchiveUtil} instance with the specified client ID and client secret.
      *
-     * @param clientID     客户端 ID
-     * @param clientSecret 客户端密钥
+     * @param clientID     the client ID provided by Bilibili Open Platform
+     * @param clientSecret the client secret provided by Bilibili Open Platform
      */
     public ArchiveUtil(String clientID, String clientSecret) {
         this.CLIENT_ID = clientID;
@@ -41,25 +61,26 @@ public class ArchiveUtil {
     }
 
     /**
-     * 创建一个新的请求构建器。
+     * Creates a new request builder to send a signed HTTP request.
      *
-     * @return 方法阶段接口，用于链式调用
+     * @return a {@code MethodStage} interface to initiate the request building process
      */
     public MethodStage sendRequestWithSignature() {
         return new RequestBuilder();
     }
 
     /**
-     * 获取基本的 HTTP 头部信息，包括签名等。
+     * Constructs the basic HTTP headers required for the request, including signature headers.
      *
-     * @param accessToken 访问令牌
-     * @param body        请求体
-     * @param contentType 内容类型
-     * @return HttpHeaders 对象
-     * @throws NoSuchAlgorithmException 当算法不存在时抛出
-     * @throws InvalidKeyException      当密钥无效时抛出
+     * @param accessToken the access token for authentication
+     * @param body        the request body
+     * @param contentType the content type of the request
+     * @return an {@code HttpHeaders} object containing all necessary headers
+     * @throws NoSuchAlgorithmException if the specified algorithm does not exist
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the Mac
      */
-    private HttpHeaders getBasicHttpHeaders(String accessToken, Object body, MediaType contentType) throws NoSuchAlgorithmException, InvalidKeyException {
+    private HttpHeaders getBasicHttpHeaders(String accessToken, Object body, MediaType contentType)
+            throws NoSuchAlgorithmException, InvalidKeyException {
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-bili-timestamp", String.valueOf(System.currentTimeMillis() / 1000));
         headers.add("x-bili-signature-method", "HMAC-SHA256");
@@ -75,17 +96,18 @@ public class ArchiveUtil {
     }
 
     /**
-     * 生成 Authorization 签名字符串。
+     * Generates the Authorization signature string based on the provided headers and client secret.
      *
-     * @param headers         HTTP 头部
-     * @param accessKeySecret 客户端密钥
-     * @return 签名字符串
-     * @throws NoSuchAlgorithmException 当算法不存在时抛出
-     * @throws InvalidKeyException      当密钥无效时抛出
+     * @param headers         the HTTP headers used in the request
+     * @param accessKeySecret the client secret
+     * @return the generated signature string
+     * @throws NoSuchAlgorithmException if the specified algorithm does not exist
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the Mac
      */
-    private String createSignature(HttpHeaders headers, String accessKeySecret) throws NoSuchAlgorithmException, InvalidKeyException {
+    private String createSignature(HttpHeaders headers, String accessKeySecret)
+            throws NoSuchAlgorithmException, InvalidKeyException {
         List<String> keyList = new ArrayList<>(headers.keySet());
-        // 对头部键进行不区分大小写的排序
+        // Sort the header keys case-insensitively
         keyList.sort(String.CASE_INSENSITIVE_ORDER);
 
         StringBuilder sign = new StringBuilder();
@@ -93,7 +115,7 @@ public class ArchiveUtil {
             String value = headers.getFirst(key);
             sign.append(key).append(":").append(value).append("\n");
         }
-        // 移除最后一个换行符
+        // Remove the last newline character
         if (!sign.isEmpty()) {
             sign.setLength(sign.length() - 1);
         }
@@ -101,13 +123,13 @@ public class ArchiveUtil {
     }
 
     /**
-     * 使用 HMAC-SHA256 算法进行加密。
+     * Encrypts data using the HMAC-SHA256 algorithm.
      *
-     * @param key  密钥
-     * @param data 要加密的数据
-     * @return 加密后的十六进制字符串
-     * @throws NoSuchAlgorithmException 当算法不存在时抛出
-     * @throws InvalidKeyException      当密钥无效时抛出
+     * @param key  the secret key used for encryption
+     * @param data the data to be encrypted
+     * @return the encrypted data as a hexadecimal string
+     * @throws NoSuchAlgorithmException if the specified algorithm does not exist
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the Mac
      */
     private String hmacSHA256(String key, String data) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
@@ -118,58 +140,118 @@ public class ArchiveUtil {
     }
 
     /**
-     * 将字节数组转换为十六进制字符串。
+     * Converts a byte array to a hexadecimal string.
      *
-     * @param bytes 字节数组
-     * @return 十六进制字符串
+     * @param bytes the byte array to convert
+     * @return the resulting hexadecimal string
      */
     private String bytesToHex(byte[] bytes) {
         StringBuilder result = new StringBuilder();
         for (byte b : bytes) {
-            // 每个字节转换为两位十六进制字符串
+            // Convert each byte to a two-digit hexadecimal string
             result.append(String.format("%02x", b));
         }
         return result.toString();
     }
 
     /**
-     * 计算字符串的 MD5 值。
+     * Computes the MD5 checksum of a given string.
      *
-     * @param str 输入字符串
-     * @return MD5 值的十六进制字符串
+     * @param str the input string
+     * @return the MD5 checksum as a hexadecimal string
      */
     private String md5(String str) {
         return DigestUtils.md5DigestAsHex(str.getBytes(StandardCharsets.UTF_8));
     }
 
-    // 定义各个阶段的接口
+    // Define interfaces for the builder pattern stages
+
+    /**
+     * The initial stage of the request builder where the HTTP method is specified.
+     */
     public interface MethodStage {
+        /**
+         * Sets the HTTP method for the request.
+         *
+         * @param method the HTTP method (GET, POST, etc.)
+         * @return the next stage of the builder to set the URI
+         */
         UriStage method(HttpMethod method);
     }
 
-
+    /**
+     * The stage of the request builder where the URI is specified.
+     */
     public interface UriStage {
+        /**
+         * Sets the URI for the request.
+         *
+         * @param uri the target URI
+         * @return the next stage of the builder to set the access token
+         */
         AccessTokenStage uri(URI uri);
     }
 
+    /**
+     * The stage of the request builder where the access token is specified.
+     */
     public interface AccessTokenStage {
+        /**
+         * Sets the access token for authentication.
+         *
+         * @param accessToken the access token
+         * @return the next stage of the builder to set the request body
+         */
         BodyStage accessToken(String accessToken);
     }
 
+    /**
+     * The stage of the request builder where the request body is specified.
+     */
     public interface BodyStage {
+        /**
+         * Sets the body of the request.
+         *
+         * @param body the request body
+         * @return the next stage of the builder to set the content type
+         */
         ContentTypeStage body(Object body);
     }
 
+    /**
+     * The stage of the request builder where the content type is specified.
+     */
     public interface ContentTypeStage {
+        /**
+         * Sets the content type of the request.
+         *
+         * @param contentType the content type (e.g., application/json)
+         * @return the final stage of the builder to execute the request
+         */
         ExecuteStage contentType(MediaType contentType);
     }
 
+    /**
+     * The final stage of the request builder where the request is executed.
+     */
     public interface ExecuteStage {
+        /**
+         * Executes the built request and returns the response.
+         *
+         * @return the response as a {@code JsonNode}
+         */
         JsonNode execute();
     }
 
     /**
-     * 请求构建器类，用于通过链式调用设置请求参数。
+     * <p>
+     * The {@code RequestBuilder} class provides a fluent API to build and execute HTTP requests
+     * with the necessary Bilibili Open Platform signatures.
+     * </p>
+     *
+     * <p>
+     * It implements multiple interfaces corresponding to different stages of the request building process.
+     * </p>
      */
     private class RequestBuilder implements MethodStage, UriStage, AccessTokenStage, BodyStage, ContentTypeStage, ExecuteStage {
         private HttpMethod method;
@@ -224,8 +306,8 @@ public class ArchiveUtil {
                 return requestSpec.retrieve()
                         .body(JsonNode.class);
             } catch (Exception e) {
-                log.error("请求失败", e);
-                throw new RuntimeException("请求失败", e);
+                log.error("Request failed", e);
+                throw new RuntimeException("Request failed", e);
             }
         }
     }
